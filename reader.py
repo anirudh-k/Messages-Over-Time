@@ -5,36 +5,38 @@ import csv
 import os
 
 
+WINDOWS_FILE = 'message_windows.csv'
+DELTA = timedelta(hours=24)
+
 class Reader:
     def __init__(self):
         self.friends = ['aditya', 'alice', 'amal', 'annie', 'christopher', 'edridge', 'grace', 'kavin', 'phillip', 'raghav', 'sangeetha', 'sarah', 'talitha', 'vishwa', 'yuliya']
+        self.readers = [self.getReader(file) for file in self.listFiles('data/')]
 
     def initWindows(self):
-        with open('message_windows.csv', 'w+') as windows:
-            writer = csv.writer(windows, delimiter=',')
+        with open(WINDOWS_FILE, 'w+') as windows:
+            writer = csv.writer(windows, delimiter=',', quotechar='\'')
             writer.writerow(['window'] + self.friends)
+
             oldDT = self.oldestMessage()
             newDT = self.newestMessage()
-            delta = timedelta(hours=12)
+
             windowCounts = [0 for x in self.friends]
             curDT = oldDT
             while (curDT < newDT):
                 writer.writerow([curDT] + windowCounts)
-                curDT += delta
+                curDT += DELTA
+        print('Success!')
+
+    def addToWindows(self):
+        for r in self.readers:
+            r.addToWindows(WINDOWS_FILE)
 
     def oldestMessage(self):
-        oldestTime = datetime.max
-        for filepath in self.listFiles('data/'):
-            tempOldestTime = self.getReader(filepath).oldestMessage()
-            oldestTime = tempOldestTime if tempOldestTime < oldestTime else oldestTime
-        return oldestTime
+        return min([r.oldestMessage() for r in self.readers])
 
     def newestMessage(self):
-        newestTime = datetime.min
-        for filepath in self.listFiles('data/'):
-            tempNewestTime = self.getReader(filepath).newestMessage()
-            newestTime = tempNewestTime if tempNewestTime > newestTime else newestTime
-        return newestTime
+        return max([r.newestMessage() for r in self.readers])
 
     def getReader(self, filepath):
         if 'whatsapp' in filepath:
