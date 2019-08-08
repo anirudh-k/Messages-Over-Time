@@ -1,8 +1,6 @@
 from reader import Reader
 
 r = Reader()
-print(r.oldestMessage())
-print(r.newestMessage())
 r.initWindows()
 r.addToWindows()
 

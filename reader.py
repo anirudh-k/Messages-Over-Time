@@ -1,12 +1,13 @@
 from datetime import datetime
 from datetime import timedelta
+from messenger_reader import MessengerReader
 from whatsapp_reader import WhatsAppReader
 import csv
 import os
 
 
 WINDOWS_FILE = 'message_windows.csv'
-DELTA = timedelta(hours=24)
+DELTA = timedelta(hours=12)
 
 class Reader:
     def __init__(self):
@@ -26,7 +27,7 @@ class Reader:
             while (curDT < newDT):
                 writer.writerow([curDT] + windowCounts)
                 curDT += DELTA
-        print('Success!')
+            writer.writerow([curDT] + windowCounts)
 
     def addToWindows(self):
         for r in self.readers:
@@ -41,6 +42,8 @@ class Reader:
     def getReader(self, filepath):
         if 'whatsapp' in filepath:
             return WhatsAppReader(filepath)
+        if 'messenger' in filepath:
+            return MessengerReader(filepath)
 
     def listFiles(self, path):
         for root, subdirs, files in os.walk(path):
