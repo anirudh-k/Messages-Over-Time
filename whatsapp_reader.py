@@ -20,12 +20,6 @@ class WhatsAppReader:
         tempfile = NamedTemporaryFile(delete=False)
         lineCount = 0
         with open(MESSAGES_DIR + self.user + '_whatsapp.txt') as messages, open(windowFile) as windows, tempfile:
-            for line in messages:
-                lineCount += 1
-            messages.seek(0)
-
-            messageCount = 0
-
             reader = csv.reader(windows, delimiter=',', quotechar='\'')
             writer = csv.writer(tempfile, delimiter=',', quotechar='\'')
 
@@ -47,12 +41,14 @@ class WhatsAppReader:
                     if curMessage[0:3] == '\xe2\x80\x8e': # some (valid) messages have this in front idk why
                         curMessage = curMessage[3:]
                     if curMessage == '': # readline() returns empty string when it's reached EOF
+                        messageCount += 1 # do the count add here because it won't happen below (because of the break statement)
                         break
                     while not (curMessage[0] == '[' and ('AM]' in curMessage or 'PM]' in curMessage) and ('] Annie Wu:' in curMessage or '] Anirudh Kaushik:' in curMessage)):
                         curMessage = messages.readline()
                         if curMessage[0:3] == '\xe2\x80\x8e': # some (valid) messages have this in front idk why
                             curMessage = curMessage[3:]
                         if curMessage == '': # readline() returns empty string when it's reached EOF
+                            curMessage = datetime.now().strftime('%m/%d/%y, %I:%M:%S %p') # do this so the timeOfMessage below doesn't fail
                             break
                     curMessageDT = self.timeOfMessage(curMessage)
                     messageCount += 1
@@ -63,8 +59,7 @@ class WhatsAppReader:
 
     def timeOfMessage(self, message):
         dtString = re.search('\[(.*)M\]', message).group(1) + 'M'
-        dt = datetime.strptime(dtString, '%m/%d/%y, %I:%M:%S %p')
-        return dt
+        return datetime.strptime(dtString, '%m/%d/%y, %I:%M:%S %p')
 
     def timeOfWindow(self, window):
         return datetime.strptime(window, '%Y-%m-%d %H:%M:%S')
