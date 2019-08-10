@@ -34,7 +34,7 @@ class WhatsAppReader:
                     firstRow = False
                     continue
                 if curMessage == '':
-                    row[idx] = messageCount
+                    row[idx] = int(row[idx]) + messageCount
                     writer.writerow(row)
                     continue
                 windowDT = self.timeOfWindow(row[0])
@@ -46,7 +46,7 @@ class WhatsAppReader:
                     if curMessage == '': # readline() returns empty string when it's reached EOF
                         messageCount += 1 # do the count add here because it won't happen below (because of the break statement)
                         break
-                    while not (curMessage[0] == '[' and ('AM]' in curMessage or 'PM]' in curMessage) and ('] Annie Wu:' in curMessage or '] Anirudh Kaushik:' in curMessage)):
+                    while not (curMessage[0] == '[' and ('AM]' in curMessage or 'PM]' in curMessage) and ':' in curMessage):
                         curMessage = messages.readline()
                         if curMessage[0:3] == '\xe2\x80\x8e': # some (valid) messages have this in front idk why
                             curMessage = curMessage[3:]
@@ -56,7 +56,7 @@ class WhatsAppReader:
                     curMessageDT = self.timeOfMessage(curMessage)
                     messageCount += 1
 
-                row[idx] = messageCount
+                row[idx] = int(row[idx]) + messageCount
                 writer.writerow(row)
         shutil.copy(tempfile.name, windowFile)
 

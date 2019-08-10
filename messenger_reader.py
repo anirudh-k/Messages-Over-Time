@@ -48,7 +48,7 @@ class MessengerReader:
                     firstRow = False
                     continue
                 if curMessageIdx >= totalMessages:
-                    row[idx] = messageCount
+                    row[idx] = int(row[idx]) + messageCount
                     writer.writerow(row)
                     continue
                 windowDT = self.timeOfWindow(row[0])
@@ -61,7 +61,7 @@ class MessengerReader:
                     curMessageDT = self.timeOfMessage(messages[curMessageIdx])
                     messageCount += 1
 
-                row[idx] = messageCount
+                row[idx] = int(row[idx]) + messageCount
                 writer.writerow(row)
         shutil.copy(tempfile.name, windowFile)
 
