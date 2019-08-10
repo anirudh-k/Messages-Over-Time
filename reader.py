@@ -17,7 +17,7 @@ class Reader:
     def initWindows(self):
         with open(WINDOWS_FILE, 'w+') as windows:
             writer = csv.writer(windows, delimiter=',', quotechar='\'')
-            writer.writerow(['window'] + self.friends)
+            writer.writerow(['window_close'] + self.friends)
 
             oldDT = self.oldestMessage()
             newDT = self.newestMessage()
