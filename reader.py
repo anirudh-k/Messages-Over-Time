@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from imessage_reader import IMessageReader
 from messenger_reader import MessengerReader
 from whatsapp_reader import WhatsAppReader
 import csv
@@ -44,6 +45,8 @@ class Reader:
             return WhatsAppReader(filepath)
         if 'messenger' in filepath:
             return MessengerReader(filepath)
+        if 'imessage' in filepath:
+            return IMessageReader(filepath)
 
     def listFiles(self, path):
         for root, subdirs, files in os.walk(path):
