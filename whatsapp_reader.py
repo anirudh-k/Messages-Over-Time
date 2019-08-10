@@ -8,7 +8,7 @@ import shutil
 MESSAGES_DIR = 'data/whatsapp/'
 
 # message format:
-# [%m/%d/%y, %I:%M:%S %p] <Sender>: <message>
+# [%m/%d/%y, %I:%M:%S %p] <sender>: <message>
 # e.g.
 # [5/31/19, 1:59:51 AM] Annie Wu: Messages to this chat and calls are now secured with end-to-end encryption.
 class WhatsAppReader:
@@ -18,8 +18,7 @@ class WhatsAppReader:
 
     def addToWindows(self, windowFile):
         tempfile = NamedTemporaryFile(delete=False)
-        lineCount = 0
-        with open(MESSAGES_DIR + self.user + '_whatsapp.txt') as messages, open(windowFile) as windows, tempfile:
+        with open(self.fileName) as messages, open(windowFile) as windows, tempfile:
             reader = csv.reader(windows, delimiter=',', quotechar='\'')
             writer = csv.writer(tempfile, delimiter=',', quotechar='\'')
 
@@ -33,6 +32,10 @@ class WhatsAppReader:
                     idx = row.index(self.user)
                     writer.writerow(row)
                     firstRow = False
+                    continue
+                if curMessage == '':
+                    row[idx] = messageCount
+                    writer.writerow(row)
                     continue
                 windowDT = self.timeOfWindow(row[0])
                 curMessageDT = self.timeOfMessage(curMessage)
@@ -53,7 +56,7 @@ class WhatsAppReader:
                     curMessageDT = self.timeOfMessage(curMessage)
                     messageCount += 1
 
-                row[idx] = messageCount - 1
+                row[idx] = messageCount
                 writer.writerow(row)
         shutil.copy(tempfile.name, windowFile)
 
